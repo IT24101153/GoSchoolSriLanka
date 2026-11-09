@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Backend: run API",
+      "type": "shell",
+      "command": "dotnet run --project src/GoSchool.Api",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "isBackground": true,
+      "problemMatcher": "$msCompile",
+      "presentation": { "group": "goschool", "panel": "dedicated" }
+    },
+    {
+      "label": "Web Admin: run dev server",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}/web-admin" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "group": "goschool", "panel": "dedicated" }
+    },
+    {
+      "label": "Mobile: run Flutter emulator",
+      "type": "shell",
+      "command": "flutter run",
+      "options": { "cwd": "${workspaceFolder}/mobile" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "group": "goschool", "panel": "dedicated" }
+    },
+    {
+      "label": "Run All (Backend + Web Admin + Mobile)",
+      "dependsOn": [
+        "Backend: run API",
+        "Web Admin: run dev server",
+        "Mobile: run Flutter emulator"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
