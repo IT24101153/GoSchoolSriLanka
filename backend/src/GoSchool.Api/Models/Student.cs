@@ -9,6 +9,9 @@ public class Student
 
     public string Name { get; set; } = string.Empty;
     public string School { get; set; } = string.Empty;
+    public string SchoolAddress { get; set; } = string.Empty;
+    public double SchoolLatitude { get; set; }
+    public double SchoolLongitude { get; set; }
     public string PrimaryContactNumber { get; set; } = string.Empty;
     public string EmergencyContactNumber { get; set; } = string.Empty;
 

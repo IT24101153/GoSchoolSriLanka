@@ -6,6 +6,8 @@ Thumbs.db
 backend/**/bin/
 backend/**/obj/
 backend/**/*.user
+backend/**/wwwroot/uploads/*
+!backend/**/wwwroot/uploads/.gitkeep
 
 # --- Web Admin (Node/Vite) ---
 web-admin/node_modules/

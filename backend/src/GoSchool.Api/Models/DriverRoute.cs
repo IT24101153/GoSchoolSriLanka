@@ -8,10 +8,10 @@ public class DriverRoute
     public User Driver { get; set; } = null!;
 
     public string Name { get; set; } = string.Empty;
-    public List<string> SchoolsCovered { get; set; } = new();
 
     public decimal PricePerDay { get; set; }
     public decimal PricePerMonth { get; set; }
 
+    public ICollection<RouteStop> Stops { get; set; } = new List<RouteStop>();
     public ICollection<Application> Applications { get; set; } = new List<Application>();
 }

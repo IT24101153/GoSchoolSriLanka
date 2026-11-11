@@ -40,6 +40,9 @@ namespace GoSchool.Api.Data.Migrations
                     b.Property<int>("RouteId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("RouteStopId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -49,6 +52,8 @@ namespace GoSchool.Api.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RouteId");
+
+                    b.HasIndex("RouteStopId");
 
                     b.HasIndex("StudentId");
 
@@ -76,15 +81,73 @@ namespace GoSchool.Api.Data.Migrations
                     b.Property<decimal>("PricePerMonth")
                         .HasColumnType("decimal(10,2)");
 
-                    b.PrimitiveCollection<List<string>>("SchoolsCovered")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DriverId");
 
                     b.ToTable("Routes");
+                });
+
+            modelBuilder.Entity("GoSchool.Api.Models.DriverSubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("BillingMonth")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BillingYear")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverId", "BillingYear", "BillingMonth")
+                        .IsUnique();
+
+                    b.ToTable("DriverSubscriptions");
+                });
+
+            modelBuilder.Entity("GoSchool.Api.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("GoSchool.Api.Models.Payment", b =>
@@ -121,9 +184,48 @@ namespace GoSchool.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationId");
+                    b.HasIndex("ApplicationId", "BillingYear", "BillingMonth")
+                        .IsUnique();
 
                     b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("GoSchool.Api.Models.RouteStop", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeOnly>("ArrivalTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("PickupAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("RouteId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("School")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Sequence")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteId");
+
+                    b.ToTable("RouteStops");
                 });
 
             modelBuilder.Entity("GoSchool.Api.Models.Student", b =>
@@ -153,6 +255,16 @@ namespace GoSchool.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("SchoolAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("SchoolLatitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("SchoolLongitude")
+                        .HasColumnType("double precision");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ParentId");
@@ -167,6 +279,9 @@ namespace GoSchool.Api.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApiToken")
+                        .HasColumnType("text");
 
                     b.Property<string>("BankAccountNumber")
                         .HasColumnType("text");
@@ -188,6 +303,15 @@ namespace GoSchool.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("HomeAddress")
+                        .HasColumnType("text");
+
+                    b.Property<double?>("HomeLatitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("HomeLongitude")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -203,6 +327,9 @@ namespace GoSchool.Api.Data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApiToken")
+                        .IsUnique();
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -251,6 +378,12 @@ namespace GoSchool.Api.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GoSchool.Api.Models.RouteStop", "Stop")
+                        .WithMany()
+                        .HasForeignKey("RouteStopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("GoSchool.Api.Models.Student", "Student")
                         .WithMany("Applications")
                         .HasForeignKey("StudentId")
@@ -258,6 +391,8 @@ namespace GoSchool.Api.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Route");
+
+                    b.Navigation("Stop");
 
                     b.Navigation("Student");
                 });
@@ -273,6 +408,28 @@ namespace GoSchool.Api.Data.Migrations
                     b.Navigation("Driver");
                 });
 
+            modelBuilder.Entity("GoSchool.Api.Models.DriverSubscription", b =>
+                {
+                    b.HasOne("GoSchool.Api.Models.User", "Driver")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
+                });
+
+            modelBuilder.Entity("GoSchool.Api.Models.Notification", b =>
+                {
+                    b.HasOne("GoSchool.Api.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("GoSchool.Api.Models.Payment", b =>
                 {
                     b.HasOne("GoSchool.Api.Models.Application", "Application")
@@ -282,6 +439,17 @@ namespace GoSchool.Api.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Application");
+                });
+
+            modelBuilder.Entity("GoSchool.Api.Models.RouteStop", b =>
+                {
+                    b.HasOne("GoSchool.Api.Models.DriverRoute", "Route")
+                        .WithMany("Stops")
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Route");
                 });
 
             modelBuilder.Entity("GoSchool.Api.Models.Student", b =>
@@ -314,6 +482,8 @@ namespace GoSchool.Api.Data.Migrations
             modelBuilder.Entity("GoSchool.Api.Models.DriverRoute", b =>
                 {
                     b.Navigation("Applications");
+
+                    b.Navigation("Stops");
                 });
 
             modelBuilder.Entity("GoSchool.Api.Models.Student", b =>
@@ -326,6 +496,8 @@ namespace GoSchool.Api.Data.Migrations
                     b.Navigation("Routes");
 
                     b.Navigation("Students");
+
+                    b.Navigation("Subscriptions");
 
                     b.Navigation("Vehicle");
                 });
