@@ -22,7 +22,7 @@
     {
       "label": "Mobile: run Flutter emulator",
       "type": "shell",
-      "command": "flutter run",
+      "command": "flutter run -d emulator",
       "options": { "cwd": "${workspaceFolder}/mobile" },
       "isBackground": true,
       "problemMatcher": [],
