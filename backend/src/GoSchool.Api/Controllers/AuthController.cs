@@ -98,6 +98,17 @@ public class AuthController(GoSchoolDbContext db, IPasswordHasher<User> hasher) 
         return NoContent();
     }
 
+    // Drivers register before they have a token, so vehicle photos are attached right after sign-up.
+    [Authorize(Roles = "Driver")]
+    [HttpPut("vehicle-photos")]
+    public async Task<IActionResult> SetVehiclePhotos(VehiclePhotosRequest req)
+    {
+        var vehicle = await db.Vehicles.FirstAsync(v => v.DriverId == User.UserId());
+        vehicle.PhotoUrls = req.PhotoUrls;
+        await db.SaveChangesAsync();
+        return Ok(Dto.Vehicle(vehicle));
+    }
+
     private static string Normalize(string email) => email.Trim().ToLowerInvariant();
 
     private static object Session(User user) => new { token = user.ApiToken, user = Dto.User(user) };
@@ -125,3 +136,5 @@ public record RegisterParentRequest(
     [property: Range(-180, 180)] double HomeLongitude);
 
 public record LoginRequest(string Email, string Password);
+
+public record VehiclePhotosRequest(List<string> PhotoUrls);

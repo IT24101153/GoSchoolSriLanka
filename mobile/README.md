@@ -1,44 +1,25 @@
-# Mobile App (Flutter)
+# GoSchool Mobile (Flutter)
 
-Not yet scaffolded — the Flutter SDK on this machine isn't runnable yet.
+One app for both Driver and Parent; the role is chosen at sign-up. Admin uses the web portal.
 
-`~/.zshrc` adds `/Users/lelum/Development/Flutter/bin` to `PATH`, but that
-directory is an incomplete checkout of the `flutter/flutter` repo (no
-`bin/flutter` executable present). Fix options:
+## Run
 
-1. Re-clone/reset the SDK:
-   ```bash
-   rm -rf ~/Development/Flutter
-   git clone https://github.com/flutter/flutter.git -b stable ~/Development/Flutter
-   flutter doctor
-   ```
-2. Or install via a version manager (e.g. [fvm](https://fvm.app/)) and point
-   `PATH` at its shim instead.
+1. Start the API (`backend/src/GoSchool.Api`, listens on `http://localhost:5133`).
+2. `flutter run` from this folder.
 
-Once `flutter doctor` runs cleanly, scaffold the app from the repo root:
+The API URL is picked automatically: Android emulator → `http://10.0.2.2:5133/api`, iOS simulator → `http://localhost:5133/api`.
+For a real phone or another host:
 
 ```bash
-cd mobile
-flutter create --org com.goschool --project-name goschool_mobile .
+flutter run --dart-define=API_BASE_URL=http://<your-computer-ip>:5133/api
 ```
 
-This app will hold **both** the Driver and Parent interfaces (role selected
-at login), per the requirements doc. Suggested structure once created:
+## Layout
 
-```
-mobile/
-  lib/
-    main.dart
-    core/            # API client, theming, shared config
-    features/
-      auth/
-      driver/         # Route & pricing config, applications, payments
-      parent/          # Student profiles, search, seat applications, payments
-    shared/
-      widgets/
-      models/
-```
+- `lib/api.dart` — HTTP client, token storage, file upload
+- `lib/auth_screens.dart` — login, sign-up (driver / parent), pending-approval screen
+- `lib/driver_screens.dart` — routes & stops, seat requests, payments & reminders, bank details, subscription
+- `lib/parent_screens.dart` — children, find a van, seat requests, payments
+- `lib/widgets.dart` — shared helpers (`Loader`, form field, notifications)
 
-Recommended packages: `dio` or `http` (API client), `go_router` (navigation),
-`flutter_riverpod` or `provider` (state management), `flutter_secure_storage`
-(auth tokens), `image_picker` (vehicle photos / payment slips).
+`flutter test` runs the widget tests without a device.

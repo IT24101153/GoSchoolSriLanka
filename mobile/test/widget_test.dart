@@ -1,30 +1,31 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:goschool_mobile/main.dart';
+import 'package:goschool_mobile/auth_screens.dart';
+import 'package:goschool_mobile/widgets.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('login screen offers email, password, login and sign-up', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+    expect(find.text('Email'), findsOneWidget);
+    expect(find.text('Password'), findsOneWidget);
+    expect(find.text('Log in'), findsOneWidget);
+    expect(find.text('Create account'), findsOneWidget);
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets('register screen switches between parent and driver fields', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+    expect(find.text('Home address'), findsOneWidget);
+    expect(find.text('Vehicle registration number'), findsNothing);
+    await tester.tap(find.text('Driver'));
+    await tester.pumpAndSettle();
+    expect(find.text('Vehicle registration number'), findsOneWidget);
+    expect(find.text('Home address'), findsNothing);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  test('formatting helpers', () {
+    expect(ym(2026, 3), '2026-03');
+    expect(hhmm('07:15:00'), '07:15');
+    expect(() => parseNum('Capacity', 'abc'), throwsA(isA<Object>()));
+    expect(parseNum('Capacity', ' 12 '), 12);
   });
 }

@@ -148,6 +148,7 @@ url = call("POST", "/uploads", raw=body, token=P, content_type=f"multipart/form-
 assert url.endswith(".png")
 with urllib.request.urlopen(url) as r:
     assert r.status == 200
+assert call("PUT", "/auth/vehicle-photos", {"photoUrls": [url]}, token=D)["photoUrls"] == [url]
 call("POST", "/uploads", raw=body.replace(b"slip.png", b"evil.exe"), token=P, content_type=f"multipart/form-data; boundary={boundary}", expect=400)
 
 # Access management: suspension kills the session immediately, reactivation restores login
